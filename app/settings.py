@@ -14,8 +14,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
 
-
+    'django_crontab',
     'rest_framework',
+
 ]
 
 MIDDLEWARE = [
@@ -87,6 +88,22 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAdminUser',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'app.izjuminka.authentication.DefaultBasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'PAGINATE_BY': 10,
+}
+
+CRONJOBS = [
+    ('*/10 * * * *', 'app.izjuminka.cron.test_scheduled_job')
+]
+
 
 try:
     from .local_settings import *
