@@ -1,3 +1,4 @@
+
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -13,8 +14,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
 
-    'app.izjuminka',
+    'django_crontab',
     'rest_framework',
+
+    'app.izjuminka',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +67,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+
+
+# Internationalization
+# https://docs.djangoproject.com/en/1.11/topics/i18n/
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -75,9 +84,26 @@ USE_L10N = True
 USE_TZ = True
 
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/1.11/howto/static-files/
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAdminUser',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'app.izjuminka.authentication.DefaultBasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'PAGINATE_BY': 10,
+}
+
+CRONJOBS = [
+    ('*/10 * * * *', 'app.izjuminka.cron.test_scheduled_job')
+]
 
 
 try:
