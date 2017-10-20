@@ -1,0 +1,10 @@
+*.pyc
+*.log
+local_settings.py
+.DS_Store
+.idea
+/venv
+/media
+/static/admin
+/static/gis
+/static/rest_framework
