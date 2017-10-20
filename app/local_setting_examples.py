@@ -9,6 +9,6 @@ DATABASES = {
     }
 }
 
-ALLOWED_HOSTS = ['31.186.100.172', '127.0.0.1']
+ALLOWED_HOSTS = ['31.186.100.172', '127.0.0.1', 'izjuminka.doubletapp.ru']
 
 SECRET_KEY = 'zvs@fbu!sla$#&$2lavt0(t8s%#9cv)1s$*_71xyv&%_&iv-og'
