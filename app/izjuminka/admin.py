@@ -1,10 +1,10 @@
 from django.contrib import admin
+from django.contrib.admin import site, ModelAdmin
+from app.izjuminka.models import VKUser
 
-# Register your models here
-#
-# from django.contrib import admin
-# from i.myapp.models import Author
-#
-# class AuthorAdmin(admin.ModelAdmin):
-#     pass
-# admin.site.register(Author, AuthorAdmin)
+
+class VKUserAdmin(ModelAdmin):
+    pass
+
+
+site.register(VKUser, VKUserAdmin)

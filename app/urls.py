@@ -3,11 +3,14 @@ from rest_framework import routers
 from app.izjuminka import views
 from django.contrib import admin
 
+from app.izjuminka.views import (
+    ProposedNewsViewSet,
+    VKUserViewSet
+)
+
 router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
-
-
+router.register(r'proposednews', ProposedNewsViewSet)
+router.register(r'vkuser', VKUserViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
