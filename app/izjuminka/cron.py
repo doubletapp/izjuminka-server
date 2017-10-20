@@ -15,7 +15,7 @@ if __name__ == "__main__":
     #     user_login='sardnej4@yandex.ru',
     #     user_password='tunis123qwe'
     # )
-    # session = vk.Session(access_token='d599b7db708cdddea4b0b07f95939f89d28a53b2de54952afd94f02f0e812eb31d57faaac906f0305f368')
+    # session = vk.Session(access_token='8cdddea4b0b07f95939f89d28a53b2de54952afd94f02f0e812eb31d57faaac906f0305f368')
     # api = vk.API(session)
 
     #

@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'django_crontab',
     'rest_framework',
 
+    'app.izjuminka',
 ]
 
 MIDDLEWARE = [
