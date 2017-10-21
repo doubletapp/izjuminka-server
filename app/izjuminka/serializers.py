@@ -21,6 +21,11 @@ def change_point(result, value):
 class VKUserSerializer(HyperlinkedModelSerializer):
     auth_token = SerializerMethodField()
 
+    kwargs = {
+        'vk_id': {'lookup_field': 'vk_id'},
+        'pk': {'lookup_field': 'vk_id'}
+    }
+
     def get_auth_token(self, obj):
         return obj.auth_token.hex
 
@@ -35,6 +40,11 @@ class VKUserSerializer(HyperlinkedModelSerializer):
             'vk_id', 'vk_token', 'auth_token', 'phone', 'is_phone_confirmed',
             'email', 'is_email_confirmed', 'point', "city"
         )
+
+        kwargs = {
+            'vk_id': {'lookup_field': 'vk_id'},
+            'pk': {'lookup_field': 'vk_id'}
+        }
 
 
 class ProposedNewsSerializer(ModelSerializer):
