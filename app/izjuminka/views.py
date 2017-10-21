@@ -1,8 +1,17 @@
-from rest_framework.viewsets import ModelViewSet
-from django.contrib.gis.geos import Point
+import json
 
-from app.izjuminka.serializers import ProposedNews, VKUser
-from app.izjuminka.serializers import ProposedNewsSerializer, VKUserSerializer
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.views import APIView
+from django.contrib.gis.geos import Point
+from django.http import HttpResponse, HttpResponseBadRequest
+from django.contrib.sites.shortcuts import get_current_site
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework import status
+from rest_framework.response import Response
+
+from .models import ProposedNews, VKUser, NewsPhoto
+from .serializers import ProposedNewsSerializer, VKUserSerializer
+from app.settings import MEDIA_ROOT
 
 
 class CustomModelViewSet(ModelViewSet):
@@ -11,7 +20,7 @@ class CustomModelViewSet(ModelViewSet):
         # Если существует вк-юзер - его нужно прописать как владельца
         vk_user = getattr(request.user, "vk_user", None)
         if vk_user:
-            request.data.update({"owner": vk_user.vk_id})
+            request.data.update({"author": vk_user.vk_id})
 
         # Если существует точка - её нужно преобразовать в исходные тип данных
         if request.data.get("point"):
@@ -21,12 +30,42 @@ class CustomModelViewSet(ModelViewSet):
             )
             request.data.update({"point": point})
 
-        return super(CustomModelViewSet, self).create(request, *args, **kwargs)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        instns = serializer.save()
+        headers = self.get_success_headers(serializer.data)
+        return instns, Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class ProposedNewsViewSet(CustomModelViewSet):
     queryset = ProposedNews.objects.all()
     serializer_class = ProposedNewsSerializer
+
+    def create(self, request, *args, **kwargs):
+        photo_objects = []
+        for photo in request.data.get("photos", []):
+            try:
+                print(photo)
+                print(photo[
+                    len("http://{}{}".format(get_current_site(request), MEDIA_ROOT)):
+                ])
+                news_photo = NewsPhoto.objects.get(
+                    photo=photo[
+                        len("http://{}{}".format(get_current_site(request), MEDIA_ROOT))+1:
+                    ]
+                )
+                photo_objects.append(news_photo)
+            except Exception as ex:
+                import traceback
+                print(traceback.format_exc())
+
+        instns, response = super(ProposedNewsViewSet, self).create(request, *args, **kwargs)
+        for photo_object in photo_objects:
+            photo_object.proposed_news = instns
+            photo_object.save()
+
+        return response
 
 
 class VKUserViewSet(CustomModelViewSet):
@@ -47,6 +86,20 @@ class VKUserViewSet(CustomModelViewSet):
             return super(CustomModelViewSet, self).update(request, *args, **kwargs)
 
         except VKUser.DoesNotExist:
-            return super(CustomModelViewSet, self).create(request, *args, **kwargs)
+            instns, response = super(VKUserViewSet, self).create(request, *args, **kwargs)
+
+            return response
 
 
+class UploadPhoto(APIView):
+    parser_classes = (MultiPartParser, FormParser,)
+
+    def post(self, request):
+        try:
+            new_photo = NewsPhoto.objects.create(photo=request.FILES['file'])
+            return HttpResponse(json.dumps({
+                "status": "ok",
+                "url": "http://{}{}".format(get_current_site(request), new_photo.photo.url)
+            }))
+        except Exception as ex:
+            return HttpResponseBadRequest(json.dumps({"status": "error"}))

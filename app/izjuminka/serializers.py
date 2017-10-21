@@ -17,14 +17,8 @@ def change_point(result, value):
     return result
 
 
-
 class VKUserSerializer(HyperlinkedModelSerializer):
     auth_token = SerializerMethodField()
-
-    kwargs = {
-        'vk_id': {'lookup_field': 'vk_id'},
-        'pk': {'lookup_field': 'vk_id'}
-    }
 
     def get_auth_token(self, obj):
         return obj.auth_token.hex
@@ -41,11 +35,6 @@ class VKUserSerializer(HyperlinkedModelSerializer):
             'email', 'is_email_confirmed', 'point', "city"
         )
 
-        kwargs = {
-            'vk_id': {'lookup_field': 'vk_id'},
-            'pk': {'lookup_field': 'vk_id'}
-        }
-
 
 class ProposedNewsSerializer(ModelSerializer):
     def to_representation(self, value):
@@ -55,7 +44,6 @@ class ProposedNewsSerializer(ModelSerializer):
     class Meta:
         model = ProposedNews
         fields = (
-            'id', 'owner', 'description', 'validate_status',
-            'validate_message', 'create_datetime', 'point', "city"
+            'id', 'author', 'description', 'validate_status',
+            'validate_message', 'create_datetime', 'point', "city", "vk_id_reference"
         )
-

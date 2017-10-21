@@ -90,6 +90,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = "media/"
+
+PHOTO_ROOT = "photos/"
+
+
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAdminUser',
@@ -98,7 +104,8 @@ REST_FRAMEWORK = {
         'app.izjuminka.authentication.DefaultBasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
-    'PAGINATE_BY': 10,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10,
 }
 
 CRONJOBS = [
