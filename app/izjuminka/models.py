@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from django.db.models import (
     CharField, IntegerField, TextField, ForeignKey, Model, CASCADE, DateTimeField,
-    BooleanField, UUIDField, AutoField, ImageField
+    BooleanField, UUIDField, AutoField, ImageField, FloatField
 )
 
 from django.contrib.gis.db.models import PointField, GeoManager
@@ -44,6 +44,7 @@ class ProposedNews(Model):
     vk_id_reference = CharField(max_length=200, blank=True, default=None, null=True)
     validate_status = CharField(max_length=200, choices=ValidateStatus, default=ValidateStatus[0][1])
     validate_message = TextField(blank=True)
+    cash = FloatField(default=0, blank=True)
     create_datetime = DateTimeField(auto_now_add=True)
 
     city = CharField(max_length=400, null=True, blank=True, default=None)
