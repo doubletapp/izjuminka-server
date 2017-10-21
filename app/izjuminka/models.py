@@ -20,13 +20,13 @@ ValidateStatus = (
 
 
 class VKUser(Model):
-    vk_id = CharField(max_length=100, primary_key=True)
+    vk_id = CharField(max_length=100, primary_key=True, unique=True)
     vk_token = CharField(max_length=400)
     phone = CharField(max_length=50, blank=True)
     is_phone_confirmed = BooleanField(default=False)
     email = TextField(blank=True)
     is_email_confirmed = BooleanField(default=False)
-    auth_token = UUIDField(default=uuid4, editable=True, unique=True)
+    auth_token = UUIDField(default=uuid4, editable=True)
     create_datetime = DateTimeField(auto_now_add=True)
 
     city = CharField(max_length=400, null=True, blank=True, default=None)
@@ -50,7 +50,6 @@ class ProposedNews(Model):
     city = CharField(max_length=400, null=True, blank=True, default=None)
     point = PointField(null=True, blank=True, default=None)
     objects = GeoManager()
-
 
     def vk_url(self):
         if self.vk_id_reference:

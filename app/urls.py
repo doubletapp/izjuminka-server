@@ -5,8 +5,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 from app.izjuminka.views import (
-    ProposedNewsViewSet, VKUserViewSet, UploadPhoto, NewsView
-
+    ProposedNewsViewSet, VKUserViewSet, UploadPhoto, NewsView, TopUsers
 )
 
 router = routers.DefaultRouter()
@@ -19,4 +18,5 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^upload_image/', UploadPhoto.as_view()),
     url(r'^news/', NewsView.as_view()),
+    url(r'^top_users/', TopUsers.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

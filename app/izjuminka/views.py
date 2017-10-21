@@ -1,4 +1,6 @@
 import json
+from datetime import datetime, timedelta
+from collections import defaultdict
 
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
@@ -12,7 +14,7 @@ import vk
 
 from .models import ProposedNews, VKUser, NewsPhoto
 from .serializers import ProposedNewsSerializer, VKUserSerializer
-from app.settings import MEDIA_ROOT, VK_SERVICE_KEY, LENTACH_ID
+from app.settings import MEDIA_ROOT, VK_SERVICE_KEY, LENTACH_ID, TOP_LIMIT
 
 
 class CustomModelViewSet(ModelViewSet):
@@ -111,8 +113,6 @@ class UploadPhoto(APIView):
 
 
 class NewsView(APIView):
-    parser_classes = (MultiPartParser, FormParser,)
-
     def get(self, request):
         offset = int(request.GET.get('offset', 0))
         count = int(request.GET.get('count', 10))
@@ -147,4 +147,74 @@ class NewsView(APIView):
             "count": count,
             "all_count": all_count,
             "news": new_news
+        })
+
+
+class TopUsers(APIView):
+    def get(self, request):
+        session = vk.Session(access_token=request.user.vk_user.vk_token)
+        api = vk.API(session)
+
+        fresh_news = ProposedNews.objects.filter(
+            create_datetime__gt=datetime.utcnow() - timedelta(days=7),
+            validate_status__in=['accepted', 'rewarded']
+        )
+
+        users = defaultdict(lambda: defaultdict(int))
+
+        for news in fresh_news:
+            post = api.wall.get(
+                posts="{}_{}".format(LENTACH_ID, news.vk_id_reference),
+                owner_id=LENTACH_ID,
+            )
+
+            users[news.author.vk_id]["hyip"] += (
+                post[1]["likes"]["count"] + post[1]["reposts"]["count"]
+                + post[1]["comments"]["count"]
+            )
+
+        list_users = []
+        you = {}
+
+        for user, value in users.items():
+            res = dict(value)
+            res.update({"user": user, "is_you": False})
+            if user == request.user.vk_user.vk_id:
+                res["is_you"] = True
+                you = res
+
+            list_users.append(res)
+
+        list_users = sorted(list_users, key=lambda x: -x["hyip"])
+
+        top_users = []
+        count_top_users = 0
+
+
+        for i in range(len(list_users)):
+            list_users[i]["position"] = i + 1
+            if count_top_users < TOP_LIMIT:
+                top_users.append(list_users[i])
+                count_top_users += 1
+            elif bool(you) is False:
+                break
+            elif you["user"] == list_users[i]["user"]:
+                top_users.append(list_users[i])
+                break
+
+        for i in range(len(top_users)):
+            try:
+                user = api.users.get(user_ids=top_users[i]["user"], fields="photo_200")
+                top_users[i].update({
+                    'first_name': user[0]['first_name'],
+                    'last_name': user[0]['last_name'],
+                    'photo': user[0]['photo_200'],
+                })
+
+            except Exception as ex:
+                pass
+
+        return JsonResponse({
+            "top_users": top_users,
+
         })
