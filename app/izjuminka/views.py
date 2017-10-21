@@ -41,14 +41,14 @@ class CustomModelViewSet(ModelViewSet):
 
 class ProposedNewsViewSet(CustomModelViewSet):
     serializer_class = ProposedNewsSerializer
-    queryset = ProposedNews.objects.all()
+    queryset = ProposedNews.objects.all().order_by('create_datetime')
 
     def get_queryset(self):
         vk_user = getattr(self.request.user, "vk_user", None)
         if vk_user:
-            return ProposedNews.objects.filter(author=vk_user)
+            return ProposedNews.objects.filter(author=vk_user).order_by('create_datetime')
         else:
-            return ProposedNews.objects.all()
+            return ProposedNews.objects.all().order_by('create_datetime')
 
     def create(self, request, *args, **kwargs):
         photo_objects = []
