@@ -40,17 +40,21 @@ class CustomModelViewSet(ModelViewSet):
 
 
 class ProposedNewsViewSet(CustomModelViewSet):
-    queryset = ProposedNews.objects.all()
     serializer_class = ProposedNewsSerializer
+    queryset = ProposedNews.objects.all()
+
+    def get_queryset(self):
+        vk_user = getattr(self.request.user, "vk_user", None)
+        if vk_user:
+            return ProposedNews.objects.filter(author=vk_user)
+        else:
+            return ProposedNews.objects.all()
 
     def create(self, request, *args, **kwargs):
         photo_objects = []
         for photo in request.data.get("photos", []):
             try:
-                print(photo)
-                print(photo[
-                    len("http://{}{}".format(get_current_site(request), MEDIA_ROOT)):
-                ])
+
                 news_photo = NewsPhoto.objects.get(
                     photo=photo[
                         len("http://{}{}".format(get_current_site(request), MEDIA_ROOT))+1:

@@ -10,7 +10,7 @@ from app.izjuminka.views import (
 )
 
 router = routers.DefaultRouter()
-router.register(r'send_news', ProposedNewsViewSet)
+router.register(r'my_post', ProposedNewsViewSet)
 router.register(r'auth', VKUserViewSet)
 
 urlpatterns = [
