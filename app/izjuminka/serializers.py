@@ -40,7 +40,7 @@ class ProposedNewsSerializer(ModelSerializer):
     class Meta:
         model = ProposedNews
         fields = (
-            'description', 'validate_status',
+            'id', 'author', 'description', 'validate_status',
             'validate_message', 'create_datetime', 'point', "city", "vk_url"
         )
-        write_only_fields = ('id', 'author')
+
