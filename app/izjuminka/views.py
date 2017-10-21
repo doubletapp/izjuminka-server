@@ -12,7 +12,7 @@ import vk
 
 from .models import ProposedNews, VKUser, NewsPhoto
 from .serializers import ProposedNewsSerializer, VKUserSerializer
-from app.settings import MEDIA_ROOT, VK_SERVICE_KEY
+from app.settings import MEDIA_ROOT, VK_SERVICE_KEY, LENTACH_ID
 
 
 class CustomModelViewSet(ModelViewSet):
@@ -119,7 +119,7 @@ class NewsView(APIView):
 
         session = vk.Session(access_token=VK_SERVICE_KEY)
         api = vk.API(session)
-        result = api.wall.get(owner_id=-29534144, count=count, offset=offset)
+        result = api.wall.get(owner_id=LENTACH_ID, count=count, offset=offset)
 
         all_count = result[0]
         new_news = []

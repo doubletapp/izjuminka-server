@@ -8,13 +8,14 @@ from django.db.models import (
 from django.contrib.gis.db.models import PointField, GeoManager
 from django.core import urlresolvers
 
-from app.settings import PHOTO_ROOT
+from app.settings import PHOTO_ROOT, LENTACH_ID
 
 
 ValidateStatus = (
-    ('new', 'new'),
+    ('pending', 'pending'),
     ('rejected', 'rejected'),
-    ('published', 'published')
+    ('accepted', 'accepted'),
+    ('rewarded', 'rewarded'),
 )
 
 
@@ -48,6 +49,12 @@ class ProposedNews(Model):
     city = CharField(max_length=400, null=True, blank=True, default=None)
     point = PointField(null=True, blank=True, default=None)
     objects = GeoManager()
+
+
+    def vk_url(self):
+        if self.vk_id_reference:
+            return "https://vk.com/wall{}_{}".format(LENTACH_ID, self.vk_id_reference)
+        return None
 
     def __str__(self):
         return "{} {}".format(self.id, self.description[:40])

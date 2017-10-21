@@ -32,7 +32,7 @@ class VKUserSerializer(HyperlinkedModelSerializer):
         )
 
 
-class ProposedNewsSerializer(ModelSerializer):
+class ProposedNewsSerializer(HyperlinkedModelSerializer):
     def to_representation(self, value):
         result = super(ProposedNewsSerializer, self).to_representation(value)
         return change_point(result, value)
@@ -41,5 +41,5 @@ class ProposedNewsSerializer(ModelSerializer):
         model = ProposedNews
         fields = (
             'id', 'author', 'description', 'validate_status',
-            'validate_message', 'create_datetime', 'point', "city", "vk_id_reference"
+            'validate_message', 'create_datetime', 'point', "city", "vk_url"
         )
