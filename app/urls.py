@@ -9,8 +9,8 @@ from app.izjuminka.views import (
 )
 
 router = routers.DefaultRouter()
-router.register(r'proposednews', ProposedNewsViewSet)
-router.register(r'vkuser', VKUserViewSet)
+router.register(r'send_news', ProposedNewsViewSet)
+router.register(r'auth', VKUserViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),

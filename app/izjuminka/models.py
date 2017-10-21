@@ -25,6 +25,7 @@ class VKUser(Model):
     auth_token = UUIDField(default=uuid4, editable=True, unique=True)
     create_datetime = DateTimeField(auto_now_add=True)
 
+    city = CharField(max_length=400, null=True, blank=True, default=None)
     point = PointField(null=True, blank=True, default=None)
     objects = GeoManager()
 
@@ -39,3 +40,7 @@ class ProposedNews(Model):
     validate_status = CharField(max_length=200, choices=ValidateStatus, default=ValidateStatus[0][1])
     validate_message = TextField(blank=True)
     create_datetime = DateTimeField(auto_now_add=True)
+
+    city = CharField(max_length=400, null=True, blank=True, default=None)
+    point = PointField(null=True, blank=True, default=None)
+    objects = GeoManager()
