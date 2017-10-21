@@ -34,6 +34,6 @@ class VKUserSerializer(HyperlinkedModelSerializer):
 class ProposedNewsSerializer(ModelSerializer):
     class Meta:
         model = ProposedNews
-        fields = ('owner', 'title', 'description', 'validate_status',
-                  'validate_message', 'url_published_news', 'creation_data')
+        fields = ('id', 'owner', 'description', 'validate_status',
+                  'validate_message', 'create_datetime')
 

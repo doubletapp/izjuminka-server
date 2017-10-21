@@ -5,7 +5,16 @@ from app.izjuminka.serializers import ProposedNews, VKUser
 from app.izjuminka.serializers import ProposedNewsSerializer, VKUserSerializer
 
 
-class ProposedNewsViewSet(ModelViewSet):
+class BasicAuthModelViewSet(ModelViewSet):
+    def create(self, request, *args, **kwargs):
+        vk_user = getattr(request.user, "vk_user", None)
+        if vk_user:
+            request.data.update({"owner": vk_user.vk_id})
+
+        return super(BasicAuthModelViewSet, self).create(request, *args, **kwargs)
+
+
+class ProposedNewsViewSet(BasicAuthModelViewSet):
     queryset = ProposedNews.objects.all()
     serializer_class = ProposedNewsSerializer
 
@@ -20,9 +29,6 @@ class VKUserViewSet(ModelViewSet):
                 request.data["point"][0],
                 request.data["point"][1]
             )
-        else:
-            point = Point(0, 0)
-
-        request.data.update({"point": point})
+            request.data.update({"point": point})
 
         return super(VKUserViewSet, self).create(request, *args, **kwargs)
