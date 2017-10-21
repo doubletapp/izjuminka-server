@@ -6,9 +6,9 @@ from django.db.models import (
 )
 
 from django.contrib.gis.db.models import PointField, GeoManager
-from django.core import urlresolvers
+from django.contrib.sites.shortcuts import get_current_site
 
-from app.settings import PHOTO_ROOT, LENTACH_ID
+from app.settings import PHOTO_ROOT, LENTACH_ID, CURRENT_DOMAIN
 
 
 ValidateStatus = (
@@ -37,6 +37,14 @@ class VKUser(Model):
         return str(self.vk_id)
 
 
+class NewsPhoto(Model):
+    proposed_news = ForeignKey(to="ProposedNews", null=True, blank=True, default=None)
+    photo = ImageField(blank=False, upload_to=PHOTO_ROOT)
+
+    def __str__(self):
+        return "{} {}".format(self.proposed_news.__str__(), self.photo.url)
+
+
 class ProposedNews(Model):
     id = AutoField(primary_key=True)
     author = ForeignKey(VKUser, on_delete=CASCADE, null=True, blank=True, default=None)
@@ -56,13 +64,10 @@ class ProposedNews(Model):
             return "https://vk.com/wall{}_{}".format(LENTACH_ID, self.vk_id_reference)
         return None
 
+    def photo(self):
+        news_photos = NewsPhoto.objects.filter(proposed_news=self)
+        return "{}{}".format(CURRENT_DOMAIN, news_photos[0].photo.url) if news_photos else None
+
     def __str__(self):
         return "{} {}".format(self.id, self.description[:40])
 
-
-class NewsPhoto(Model):
-    proposed_news = ForeignKey(ProposedNews, null=True, blank=True, default=None)
-    photo = ImageField(blank=False, upload_to=PHOTO_ROOT)
-
-    def __str__(self):
-        return "{} {}".format(self.proposed_news.__str__(), self.photo.url)

@@ -129,6 +129,7 @@ class NewsView(APIView):
             if text and text.find("#радиолентач"):
                 new_nws = {
                     "text": text,
+                    "post_id": nws.get("id"),
                     "photos": []
                 }
 

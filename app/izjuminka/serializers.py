@@ -41,6 +41,6 @@ class ProposedNewsSerializer(ModelSerializer):
         model = ProposedNews
         fields = (
             'id', 'author', 'description', 'validate_status',
-            'validate_message', 'create_datetime', 'point', "city", "vk_url", "cash"
+            'validate_message', 'create_datetime', 'point', "city", "vk_url", "cash", "photo"
         )
 
