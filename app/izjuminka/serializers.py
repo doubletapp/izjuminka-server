@@ -1,10 +1,6 @@
-from django.contrib.auth.models import User, Group
-from rest_framework import serializers
-
 from rest_framework.serializers import (
     HyperlinkedModelSerializer, ModelSerializer, SerializerMethodField
 )
-
 
 from app.izjuminka.models import VKUser, ProposedNews
 

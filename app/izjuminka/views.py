@@ -3,15 +3,16 @@ import json
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from django.contrib.gis.geos import Point
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.contrib.sites.shortcuts import get_current_site
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from rest_framework.response import Response
+import vk
 
 from .models import ProposedNews, VKUser, NewsPhoto
 from .serializers import ProposedNewsSerializer, VKUserSerializer
-from app.settings import MEDIA_ROOT
+from app.settings import MEDIA_ROOT, VK_SERVICE_KEY
 
 
 class CustomModelViewSet(ModelViewSet):
@@ -103,3 +104,43 @@ class UploadPhoto(APIView):
             }))
         except Exception as ex:
             return HttpResponseBadRequest(json.dumps({"status": "error"}))
+
+
+class NewsView(APIView):
+    parser_classes = (MultiPartParser, FormParser,)
+
+    def get(self, request):
+        offset = int(request.GET.get('offset', 0))
+        count = int(request.GET.get('count', 10))
+
+        session = vk.Session(access_token=VK_SERVICE_KEY)
+        api = vk.API(session)
+        result = api.wall.get(owner_id=-29534144, count=count, offset=offset)
+
+        all_count = result[0]
+        new_news = []
+
+        for nws in result[1:]:
+            text = nws.get("text")
+            if text and text.find("#радиолентач"):
+                new_nws = {
+                    "text": text,
+                    "photos": []
+                }
+
+                for attache in nws.get("attachments", []):
+                    from pprint import pprint
+                    if attache["type"] == "photo":
+                        pprint(attache)
+                        src_big = attache["photo"].get("src_big")
+                        if src_big:
+                            new_nws["photos"].append(src_big)
+
+                new_news.append(new_nws)
+
+        return JsonResponse({
+            "offset": offset,
+            "count": count,
+            "all_count": all_count,
+            "news": new_news
+        })

@@ -3,6 +3,8 @@ DEFAULT_AUTHENTICATION_CREDENTIAL = {
     'password': 'password',
 }
 
+VK_SERVICE_KEY = "5c6f2059b6677b3addd87cd5a45360"
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
