@@ -40,6 +40,7 @@ class ProposedNewsSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = ProposedNews
         fields = (
-            'id', 'author', 'description', 'validate_status',
+            'description', 'validate_status',
             'validate_message', 'create_datetime', 'point', "city", "vk_url"
         )
+        read_only_fields = ('id', 'author')
