@@ -28,7 +28,7 @@ class VKUser(Model):
     is_email_confirmed = BooleanField(default=False)
     auth_token = UUIDField(default=uuid4, editable=True, unique=True)
 
-    point = PointField(blank=True)
+    point = PointField()
     objects = GeoManager()
 
 

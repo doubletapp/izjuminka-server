@@ -5,19 +5,24 @@ from rest_framework.serializers import (
     HyperlinkedModelSerializer, ModelSerializer, SerializerMethodField
 )
 
+
 from app.izjuminka.models import VKUser, ProposedNews
 
 
 class VKUserSerializer(HyperlinkedModelSerializer):
     auth_token = SerializerMethodField()
-    point = SerializerMethodField()
 
     def get_auth_token(self, obj):
         return obj.auth_token.hex
 
+    def to_representation(self, value):
+        result = super(VKUserSerializer, self).to_representation(value)
+        if result.get("point"):
+            result["point"] = list(value.point)
+            if result["point"][0] == result["point"][1] == 0:
+                result.pop("point")
 
-    def get_point(self, obj):
-        return list(obj.point)[::-1]
+        return result
 
     class Meta:
         model = VKUser

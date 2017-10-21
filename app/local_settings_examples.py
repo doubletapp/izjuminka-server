@@ -5,7 +5,7 @@ DEFAULT_AUTHENTICATION_CREDENTIAL = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'izjuminka_db',
         'USER': 'izjuminka',
         'PASSWORD': 'password',
