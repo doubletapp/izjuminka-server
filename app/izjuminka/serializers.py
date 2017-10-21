@@ -43,4 +43,4 @@ class ProposedNewsSerializer(HyperlinkedModelSerializer):
             'description', 'validate_status',
             'validate_message', 'create_datetime', 'point', "city", "vk_url"
         )
-        read_only_fields = ('id', 'author')
+        write_only_fields = ('id', 'author')
