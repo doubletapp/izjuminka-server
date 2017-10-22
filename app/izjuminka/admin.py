@@ -27,6 +27,6 @@ class NewsPhotoAdmin(ModelAdmin):
 
 
 site.register(VKUser, VKUserAdmin)
-site.register(AdminUser, AdminUserAdmin)
+# site.register(AdminUser, AdminUserAdmin)
 site.register(ProposedNews, ProposedNewsAdmin)
 site.register(NewsPhoto, NewsPhotoAdmin)
