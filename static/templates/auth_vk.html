@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Auth VK{% endblock %}
+{% block body %}
+    {% if path_photo %}
+        <img class="photo_200" src="{{ path_photo }}" alt='path_photo'>
+        <h1>Token: </h1><p>{{ token }}</p>
+        <p><input class="btn btn-primary" type="submit" value="logout" id="logout" onclick="onClick()"></p>
+    {% else %}
+        <a class="btn btn-primary" href="https://oauth.vk.com/authorize?client_id=6227710&scope=notify,friends&redirect_uri=http://localhost:8000/admin/auth_vk/&display=page&response_type=token&auth=false">Авторизоваться</a>
+    {% endif %}
+    <script >
+
+    var post_data = {
+      'csrfmiddlewaretoken':"{{ csrf_token }}"
+    };
+        function onClick() {
+            $.ajax({
+                url: '/admin/delete_auth_vk/',
+                type: 'POST',
+                data: post_data,
+                dataType: "json"
+            });
+            window.location.href = "/admin/delete_auth_vk/";
+        }
+
+        $( window ).load(function() {
+            var url_path = window.location.href.replace('#', '');
+            var index = url_path.indexOf('access_token');
+            if (index !== -1) {
+                var url = url_path.substring(0, index);
+                var form = $('<form action="' + url + '" method="post">' +"{% csrf_token %}"+
+                '<input type="text" name="api_url" value="' + url_path.substring(index) + '" />' +
+                '</form>');
+                $('body').append(form);
+                form.submit();
+            }
+            });
+    </script>
+    <style>
+        .photo_200 {
+            width: 200px;
+            height: 200px;
+        }
+    </style>
+{% endblock %}
+

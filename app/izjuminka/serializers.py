@@ -2,7 +2,8 @@ from rest_framework.serializers import (
     HyperlinkedModelSerializer, ModelSerializer, SerializerMethodField
 )
 
-from app.izjuminka.models import VKUser, ProposedNews
+
+from app.izjuminka.models import VKUser, ProposedNews, AdminUser
 
 
 def change_point(result, value):
@@ -11,6 +12,14 @@ def change_point(result, value):
         if result["point"][0] == result["point"][1] == 0:
             result.pop("point")
     return result
+
+class AdminUserSerializer():
+    class Meta:
+        model = AdminUser
+        fields = (
+            'user',
+            'vk_id', 'vk_token'
+        )
 
 
 class VKUserSerializer(HyperlinkedModelSerializer):

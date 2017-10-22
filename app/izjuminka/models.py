@@ -2,9 +2,11 @@ from uuid import uuid4
 
 from django.db.models import (
     CharField, IntegerField, TextField, ForeignKey, Model, CASCADE, DateTimeField,
-    BooleanField, UUIDField, AutoField, ImageField, FloatField
+    BooleanField, UUIDField, AutoField, ImageField, OneToOneField, FloatField
 )
-
+from django.contrib import admin
+from django.urls import reverse
+from django.contrib.auth.models import User as DjangoUser
 from django.contrib.gis.db.models import PointField, GeoManager
 from django.contrib.sites.shortcuts import get_current_site
 
@@ -17,6 +19,15 @@ ValidateStatus = (
     ('accepted', 'accepted'),
     ('rewarded', 'rewarded'),
 )
+
+
+class AdminUser(Model):
+    user = OneToOneField(DjangoUser, on_delete=CASCADE, primary_key=True)
+    vk_id = CharField(max_length=100)
+    vk_token = CharField(max_length=400)
+
+    def __str__(self):
+        return str(self.vk_id)
 
 
 class VKUser(Model):

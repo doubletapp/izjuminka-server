@@ -4,27 +4,16 @@ def test_scheduled_job():
     print(1)
 
 
-def download_popular_news():
-    pass
-
-
 if __name__ == "__main__":
-    pass
-
     # print(User.objects())
 
 
-    # import vk
-    #
-    # session = vk.AuthSession(
-    #     app_id='6227710',
-    #     user_login='sardnej4@yandex.ru',
-    #     user_password='tunis123qwe'
-    # )
-    # session = vk.Session(access_token='8cdddea4b0b07f95939f89d28a53b2de54952afd94f02f0e812eb31d57faaac906f0305f368')
-    # api = vk.API(session)
+    import vk
 
-    #
-    # print(api)
-    #
-    # print(api.wall.post(owner_id=444485291, message='Спасибо всем землянам'))
+    session = vk.Session(access_token='6e7f31b2f7bb14a27e2a756fe9d3a07b650e44ad9c8a2959fb2043b8ab9fc0a40e9ef9612d7b185729258')
+    api = vk.API(session)
+
+
+    print(api)
+
+    print(api.users.get(user_ids=95586611, fields='photo_200'))
