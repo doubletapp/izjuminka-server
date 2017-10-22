@@ -5,6 +5,11 @@ local_settings.py
 .idea
 /venv
 /media
+/news2
+/news2/*
 /static/admin
 /static/gis
 /static/rest_framework
+news2
+news2/*
+news2/

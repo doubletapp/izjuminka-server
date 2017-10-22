@@ -1,6 +1,6 @@
 DEFAULT_AUTHENTICATION_CREDENTIAL = {
     'login': 'admin',
-    'password': '6cceb3f9721e4baab54e95ca8cb196e1',
+    'password': 'password',
 }
 
 DATABASES = {
@@ -20,4 +20,7 @@ SECRET_KEY = 'SECRET_KEY'
 
 DIR_TEMPLATES = '/home/irina/irina/Project/izjuminka-server/static/templates'
 
-TOKEN = '593d2569d9c1b57b561fe80ee4bdd7ba722aa3e7905b4ac77828a8a0efd8d375b369f0ddcc307952f6435'
+TOP_LIMIT = 10
+LENTACH_ID = -29534144
+VK_SERVICE_KEY = "5c6f2059b6677b3addd87cd5a45360"
+CURRENT_DOMAIN = "http://api.izjuminka.media"

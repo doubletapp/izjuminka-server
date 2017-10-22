@@ -1,6 +1,3 @@
-from django.contrib.auth.models import User, Group
-from rest_framework import serializers
-
 from rest_framework.serializers import (
     HyperlinkedModelSerializer, ModelSerializer, SerializerMethodField
 )
@@ -53,5 +50,6 @@ class ProposedNewsSerializer(ModelSerializer):
         model = ProposedNews
         fields = (
             'id', 'author', 'description', 'validate_status',
-            'validate_message', 'create_datetime', 'point', "city", "vk_id_reference"
+            'validate_message', 'create_datetime', 'point', "city", "vk_url", "cash", "photo"
         )
+
