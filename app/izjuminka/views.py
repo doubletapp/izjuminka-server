@@ -289,7 +289,7 @@ class TopUsers(APIView):
 
         })
 
-import pprint
+
 class AccountPayment(APIView):
     @staticmethod
     def get_content(request):
