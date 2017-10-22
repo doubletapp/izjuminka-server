@@ -6,7 +6,7 @@ from django.conf import settings
 from django.views.generic import TemplateView
 
 from app.izjuminka.views import (
-    ProposedNewsViewSet, VKUserViewSet, UploadPhoto, NewsView, TopUsers, AuthVK, DeleteAuthVK
+    ProposedNewsViewSet, VKUserViewSet, UploadPhoto, NewsView, TopUsers, AuthVK, DeleteAuthVK, AccountPayment
 
 )
 
@@ -20,9 +20,8 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/auth_vk/', AuthVK.as_view()),
     url(r'^admin/delete_auth_vk/', DeleteAuthVK.as_view()),
-    # url(r'^admin/send_transfer/', DeleteAuthVK.as_view()),
+    url(r'^admin/send_transfer/', AccountPayment.as_view()),
     url(r'^upload_image/', UploadPhoto.as_view()),
     url(r'^news/', NewsView.as_view()),
     url(r'^top_users/', TopUsers.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-              # + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
