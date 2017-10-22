@@ -103,7 +103,7 @@ class VKUserViewSet(CustomModelViewSet):
                 request.data["vk_token"] = vk_user.vk_token
 
             self.get_object = lambda: vk_user
-            return super(CustomModelViewSet, self).update(request, *args, **kwargs)
+            return super(VKUserViewSet, self).update(request, *args, **kwargs)
 
         except VKUser.DoesNotExist:
             instns, response = super(VKUserViewSet, self).create(request, *args, **kwargs)
