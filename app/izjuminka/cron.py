@@ -1,11 +1,17 @@
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 
 def test_scheduled_job():
     print(1)
 
 
+def download_popular_news():
+    pass
+
+
 if __name__ == "__main__":
-    print(User.objects())
+    pass
+
+    # print(User.objects())
 
 
     # import vk

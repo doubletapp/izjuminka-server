@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'app.izjuminka',
+    'app.global_news',
 ]
 
 MIDDLEWARE = [
@@ -109,9 +110,10 @@ REST_FRAMEWORK = {
 }
 
 CRONJOBS = [
-    ('*/10 * * * *', 'app.izjuminka.cron.test_scheduled_job')
+    ('*/10 * * * *', 'app.izjuminka.global_news.test_scheduled_job')
 ]
 
+NEWS_FEEDS = [""]
 
 try:
     from .local_settings import *
