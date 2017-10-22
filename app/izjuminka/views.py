@@ -1,17 +1,29 @@
 import json
+import vk
 
+from urllib.parse import parse_qs, urlparse
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from django.contrib.gis.geos import Point
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.shortcuts import redirect
 from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth.models import User
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework import status
 from rest_framework.response import Response
+from django.http import HttpResponse
+from django.template import loader
+from django.http.request import QueryDict
 
-from .models import ProposedNews, VKUser, NewsPhoto
-from .serializers import ProposedNewsSerializer, VKUserSerializer
+from .models import ProposedNews, VKUser, NewsPhoto, AdminUser
+from .serializers import ProposedNewsSerializer, VKUserSerializer, AdminUserSerializer
 from app.settings import MEDIA_ROOT
+
+
+class AdminUserViewSet(ModelViewSet):
+    queryset = AdminUser.objects.all()
+    serializer_class = AdminUserSerializer
 
 
 class CustomModelViewSet(ModelViewSet):
@@ -103,3 +115,67 @@ class UploadPhoto(APIView):
             }))
         except Exception as ex:
             return HttpResponseBadRequest(json.dumps({"status": "error"}))
+
+
+class AuthVK(APIView):
+    template = loader.get_template('auth_vk.html')
+
+    @staticmethod
+    def get_content(request):
+        user = AdminUser.objects.get(user=request.user)
+        print("AdminUser", user)
+        session = vk.Session(access_token=user.vk_token)
+        api = vk.API(session)
+        path_photo_user = api.users.get(user_ids=user.vk_id, fields='photo_200')[0]['photo_200']
+        context = {
+            'path_photo': path_photo_user,
+            'token': user.vk_token
+        }
+
+        return context
+
+    def get(self, request):
+        print(request.method)
+        template = loader.get_template('auth_vk.html')
+        try:
+            context = self.get_content(request)
+        except AdminUser.DoesNotExist:
+            context = {}
+
+        return HttpResponse(template.render(context, request))
+
+    def post(self, request):
+        print(request.method)
+        api_url = request.POST['api_url']
+        query = parse_qs(urlparse('/?' + api_url).query, keep_blank_values=True)
+        try:
+            user = AdminUser.objects.get(user=request.user)
+            user.vk_token = query['access_token'][0]
+            user.save()
+        except AdminUser.DoesNotExist:
+            AdminUser.objects.create(user=request.user, vk_token=query['access_token'][0], vk_id=query['user_id'][0])
+        context = self.get_content(request)
+
+        template = loader.get_template('auth_vk.html')
+        return HttpResponse(template.render(context, request))
+
+
+class DeleteAuthVK(APIView):
+    def get(self, request):
+        return HttpResponsePermanentRedirect("/admin/auth_vk/")
+
+    def post(self, request):
+        print('hsdfjfdh')
+        user = AdminUser.objects.get(user=request.user)
+        user.delete()
+        del user
+        try:
+            user = AdminUser.objects.get(user=request.user)
+        except AdminUser.DoesNotExist:
+            pass
+
+        request.user = User.objects.get(id=request.user.id)
+
+        return HttpResponseRedirect("/admin/")
+
+

@@ -2,9 +2,11 @@ from uuid import uuid4
 
 from django.db.models import (
     CharField, IntegerField, TextField, ForeignKey, Model, CASCADE, DateTimeField,
-    BooleanField, UUIDField, AutoField, ImageField
+    BooleanField, UUIDField, AutoField, ImageField, OneToOneField
 )
-
+from django.contrib import admin
+from django.urls import reverse
+from django.contrib.auth.models import User as DjangoUser
 from django.contrib.gis.db.models import PointField, GeoManager
 from django.core import urlresolvers
 
@@ -16,6 +18,15 @@ ValidateStatus = (
     ('rejected', 'rejected'),
     ('published', 'published')
 )
+
+
+class AdminUser(Model):
+    user = OneToOneField(DjangoUser, on_delete=CASCADE, primary_key=True)
+    vk_id = CharField(max_length=100)
+    vk_token = CharField(max_length=400)
+
+    def __str__(self):
+        return str(self.vk_id)
 
 
 class VKUser(Model):

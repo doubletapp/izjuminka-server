@@ -1,0 +1,19 @@
+<!-- base.html -->
+
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <title>{% block title %}{% endblock %}</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-latest.min.js "></script>
+
+  </head>
+  <body>
+      {% block body %}
+      {% endblock %}
+      <footer class="footer">
+        <p>© {{ current_year }} izjuminka</p>
+      </footer>
+    </div>
+  </body>
+</html>
