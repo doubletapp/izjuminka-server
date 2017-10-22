@@ -1,122 +1,91 @@
-# from django.contrib.auth.models import User
+from datetime import datetime, timedelta
+import dateutil.parser
+import re
 
-from datetime import datetime
-    import dateutil
-
-def test_scheduled_job():
-    print(1)
-
-from datetime import datetime
 import feedparser
-from urllib.request import Request, urlopen
-import copy
 import pymorphy2
+from flask import Flask
+from flask_mongoengine import MongoEngine
 
-from pprint import pprint
+from app.global_news.models import OldNews
+from app.izjuminka.models import ProposedNews
+from app.settings import MONGODB_SETTINGS, EQUAL_WORDS_COUNT, EQUAL_WORDS_PERCENT, NEWS_FEEDS
 
 morph = pymorphy2.MorphAnalyzer()
 
 
+def build_app():
+    app = Flask(__name__)
+    app.debug = True
+    app.config['MONGODB_SETTINGS'] = MONGODB_SETTINGS
+    db = MongoEngine(app)
+
+    return app
+
+
 def to_word_vector(text):
-    words = [morph.parse(w)[0] for w in text.split(" ")]
+    words = [
+        morph.parse(w)[0] for w in re.sub('[^a-zA-Zа-яА-я]', ' ', text).split(" ") if w and len(w) > 2
+    ]
     result = []
 
     for word in words:
-        if word.tag.POS in ["NOUN", "VERB", "NUMR"]:
+        if word.tag.POS in ["NOUN", "VERB", "NUMR", None]:
             result.append(word.normal_form)
     return result
 
 
-
 def download_popular_news():
+    build_app()
 
-    rssparse = feedparser.parse("https://news.yandex.ru/world.rss")
+    for feed in NEWS_FEEDS:
+        rssparse = feedparser.parse(feed)
 
-    from pprint import pprint
-    pprint(datetime.strftime(rssparse['entries'][0]['published'], '%d %b %Y %I:%M%p'))
+        data = [{
+            "original_title": obj['title'],
+            "original_description": obj['summary'],
+            "vector_words": list(set(to_word_vector(obj['summary'])) & set(to_word_vector(obj['title']))),
+            # "vector_words": to_word_vector(obj['summary']),
+            "created_datetime": dateutil.parser.parse(rssparse['entries'][0]['published']),
+        } for obj in rssparse['entries']]
 
-    data = [{
-        "title": to_word_vector(obj['title']),
-        "summary": to_word_vector(obj['title'])
-    } for obj in rssparse['entries']]
-
-    # rr = morph.parse(data[0]["title"])
-    pprint(data)
+        for nws in data:
+            try:
+                old_news = OldNews.objects.get(__raw__={"original_title": nws["original_title"]})
+            except OldNews.DoesNotExist:
+                OldNews.objects.create(**nws)
 
 
+def auto_rejected_news():
+    build_app()
 
+    for new_news in ProposedNews.objects.filter(validate_status="pending"):
+        word_vector = to_word_vector(new_news.description)
 
-    # print(
-    #     rssparse['entries']['title']
-    # )
+        result = None
+        max_count = 0
+        for old_news in OldNews.objects(created_datetime__gte=datetime.utcnow()-timedelta(days=3)):
+            crossing = set(word_vector) & set(old_news["vector_words"])
+            if len(crossing) > max_count:
+                max_count = len(crossing)
+                result = old_news
 
-    # last_update_datetime = rss['last_update']
+        if result:
+            percent = max_count/len(word_vector)
+            if max_count >= EQUAL_WORDS_COUNT and percent >= EQUAL_WORDS_PERCENT:
+                new_news.validate_status = 'rejected'
+                new_news.validate_message = 'Копия популярной новости.'
+                new_news.save()
+                continue
 
-    #if len(rssparse.entries) == 0:
-        #logger.error("Error download "+str(rss))
-    #
-    # all_news = []
-    #
-    # for item in rssparse.entries:
-    #     c_dt = item.published_parsed
-    #     current_datetime = datetime(c_dt.tm_year, c_dt.tm_mon, c_dt.tm_mday, c_dt.tm_hour, c_dt.tm_min, c_dt.tm_sec)
-    #
-    #     if last_update_datetime is None or current_datetime > last_update_datetime:
-    #         category = "Без категории"
-    #         if "category" in item:
-    #             category = item.category
-    #
-    #         req = Request(url=item.link)
-    #         req.add_header('User-agent', 'Mozilla/5.0')
-    #
-    #         #key = ""
-    #
-    #         try:
-    #             page = urlopen(req).read()
-    #         except Exception as ex:
-    #             page = ''
-    #
-    #         #if key != "Loading Error":
-    #         #    fs = gridfs.GridFS(db)
-    #         #    key = fs.put(page)
-    #
-    #         source = copy.deepcopy(source)
-    #         source.pop("rss")
-    #         source["rss"] = rss
-    #
-    #         news = {
-    #             "source": source,
-    #             "title": item.title,
-    #             "category": category,
-    #             "link": item.link,
-    #             "datetime": current_datetime,
-    #             "description": item.summary,
-    #             "processed": False,
-    #             "page": page,
-    #         }
-    #
-    #         all_news.append(news)
-    #
-    #     return all_news
+        new_news.validate_status = 'in_progress'
+        new_news.save()
+
 
 
 if __name__ == "__main__":
+    build_app()
+
     download_popular_news()
 
-    # print(User.objects())
-
-
-    # import vk
-    #
-    # session = vk.AuthSession(
-    #     app_id='6227710',
-    #     user_login='sardnej4@yandex.ru',
-    #     user_password='tunis123qwe'
-    # )
-    # session = vk.Session(access_token='8cdddea4b0b07f95939f89d28a53b2de54952afd94f02f0e812eb31d57faaac906f0305f368')
-    # api = vk.API(session)
-
-    #
-    # print(api)
-    #
-    # print(api.wall.post(owner_id=444485291, message='Спасибо всем землянам'))
+    auto_rejected_news()

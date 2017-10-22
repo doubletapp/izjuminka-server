@@ -20,6 +20,10 @@ SECRET_KEY = 'SECRET_KEY'
 
 DIR_TEMPLATES = '/home/irina/irina/Project/izjuminka-server/static/templates'
 
+MONGODB_SETTINGS = {
+    'db': 'news_storage'
+}
+
 TOP_LIMIT = 10
 LENTACH_ID = -29534144
 VK_SERVICE_KEY = "5c6f2059b6677b3addd87cd5a45360"

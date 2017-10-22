@@ -99,10 +99,21 @@ REST_FRAMEWORK = {
 }
 
 CRONJOBS = [
-    ('*/10 * * * *', 'app.izjuminka.global_news.test_scheduled_job')
+    ('*/5 * * * *', 'app.global_news.cron.auto_rejected_news'),
+    ('*/5 * * * *', 'app.global_news.cron.download_popular_news'),
 ]
 
-NEWS_FEEDS = [""]
+NEWS_FEEDS = [
+    "https://news.yandex.ru/world.rss", "https://news.yandex.ru/gadgets.rss",
+    "https://news.yandex.ru/index.rss", "https://news.yandex.ru/internet.rss",
+    "https://news.yandex.ru/society.rss", "https://news.yandex.ru/politics.rss",
+    "https://news.yandex.ru/science.rss", "https://news.yandex.ru/incident.rss",
+    "https://news.yandex.ru/sport.rss", "https://news.yandex.ru/religion.rss",
+    "https://news.yandex.ru/business.rss",
+]
+
+EQUAL_WORDS_COUNT = 4
+EQUAL_WORDS_PERCENT = 0.25
 
 try:
     from .local_settings import *

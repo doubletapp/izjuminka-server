@@ -17,6 +17,7 @@ ValidateStatus = (
     ('pending', 'pending'),
     ('rejected', 'rejected'),
     ('accepted', 'accepted'),
+    ('in_progress', 'in_progress'),
     ('rewarded', 'rewarded'),
 )
 

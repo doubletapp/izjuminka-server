@@ -9,4 +9,6 @@ pymorphy2==0.8
 feedparser==5.2.1
 pymorphy2-dicts-ru
 python-dateutil
-
+pymongo
+mongoengine
+flask-mongoengine
