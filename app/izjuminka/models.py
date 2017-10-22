@@ -82,5 +82,12 @@ class ProposedNews(Model):
         return "{}{}".format(CURRENT_DOMAIN, news_photos[0].photo.url) if news_photos else None
 
     def __str__(self):
-        return "{} {}".format(self.id, self.description[:40])
+        return str(self.id)
 
+
+class Account(Model):
+    news = OneToOneField(ProposedNews, on_delete=CASCADE)
+    amount = CharField(max_length=100)
+
+    def __str__(self):
+        return str(self.amount)

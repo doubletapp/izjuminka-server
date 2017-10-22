@@ -1,12 +1,13 @@
 import json
+import datetime
 from collections import defaultdict
-from datetime import datetime, timedelta
+from app.settings import TOKEN
 
+from urllib.parse import parse_qs, urlparse
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
 from django.contrib.gis.geos import Point
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect, HttpResponsePermanentRedirect
-from django.shortcuts import redirect
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.models import User
@@ -15,14 +16,10 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.http import HttpResponse
 from django.template import loader
-from django.http.request import QueryDict
 import vk
 
-from .models import ProposedNews, VKUser, NewsPhoto, AdminUser
+from .models import ProposedNews, VKUser, NewsPhoto, AdminUser, Account
 from .serializers import ProposedNewsSerializer, VKUserSerializer, AdminUserSerializer
-from app.settings import MEDIA_ROOT
-from .models import ProposedNews, VKUser, NewsPhoto
-from .serializers import ProposedNewsSerializer, VKUserSerializer
 from app.settings import MEDIA_ROOT, VK_SERVICE_KEY, LENTACH_ID, TOP_LIMIT
 
 
@@ -127,12 +124,9 @@ class UploadPhoto(APIView):
 
 
 class AuthVK(APIView):
-    template = loader.get_template('auth_vk.html')
-
     @staticmethod
     def get_content(request):
         user = AdminUser.objects.get(user=request.user)
-        print("AdminUser", user)
         session = vk.Session(access_token=user.vk_token)
         api = vk.API(session)
         path_photo_user = api.users.get(user_ids=user.vk_id, fields='photo_200')[0]['photo_200']
@@ -171,10 +165,9 @@ class AuthVK(APIView):
 
 class DeleteAuthVK(APIView):
     def get(self, request):
-        return HttpResponsePermanentRedirect("/admin/auth_vk/")
+        return HttpResponseRedirect("/admin/auth_vk/")
 
     def post(self, request):
-        print('hsdfjfdh')
         user = AdminUser.objects.get(user=request.user)
         user.delete()
         del user
@@ -186,8 +179,6 @@ class DeleteAuthVK(APIView):
         request.user = User.objects.get(id=request.user.id)
 
         return HttpResponseRedirect("/admin/")
-
-
 
 
 class NewsView(APIView):
@@ -297,3 +288,33 @@ class TopUsers(APIView):
             "top_users": top_users,
 
         })
+
+import pprint
+class AccountPayment(APIView):
+    @staticmethod
+    def get_content(request):
+        amount = request.GET.get('amount', '100')
+        news = ProposedNews.objects.all()
+        return {
+            'news': news,
+            'amount': amount
+        }
+
+    def get(self, request):
+        template = loader.get_template('send_transfer.html')
+        context = self.get_content(request)
+        print(context)
+        return HttpResponse(template.render(context, request))
+
+    def post(self, request):
+        template = loader.get_template('send_transfer.html')
+
+        amount = (request.POST['amount'])
+        author_id=int(request.POST['news'])
+        session = vk.Session(access_token='8364ba26be83c4e336c724426e6f5e3a1ea15d0f5e17943d6b0648257fc5d63ff8dcaad9192a75142f6a2')
+        api = vk.API(session)
+        temp = api.money.sendTransfer(receiver_id=author_id, amount=amount, currency='RUB', message='Hello', version='5.68')
+        print(temp)
+
+        return HttpResponse(template.render({}, request))
+

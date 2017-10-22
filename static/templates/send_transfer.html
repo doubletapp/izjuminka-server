@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Send Transfer{% endblock %}
+{% block body %}
+    <form method="post" class="big-block">{% csrf_token %}
+        <div class="in-size">
+            <select class="form-control small-block" id="news" name="news">
+                {% for new in news %}
+                    <option value={{ new.author }}>{{new.description}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="in-size small-block">
+            <input class="form-control" type="hidden" id="current_id" name="current_id" value="">
+            <input class="form-control" name="amount" value="{{ amount }}">
+        </div>
+        <div class="in-size small-block">
+            <input class="my-button btn btn-primary" type="submit" value="Перевести">
+        </div>
+    </form>
+    <style>
+        .big-block {
+            display: block;
+            width: 360px;
+            border: 1px solid #dcdcdc;
+            border-radius: 5%;
+            margin: auto;
+        }
+        .my-button {
+            display: block;
+        }
+        .small-block {
+            margin: 20px auto !important;
+        }
+
+        .in-size {
+            width: 320px;
+            margin: auto;
+        }
+    </style>
+{% endblock %}
