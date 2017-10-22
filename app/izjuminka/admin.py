@@ -1,9 +1,8 @@
 from django.contrib.admin import site, ModelAdmin
-from app.izjuminka.models import VKUser, ProposedNews, NewsPhoto, AdminUser, Account
+from app.izjuminka.models import VKUser, ProposedNews, NewsPhoto, AdminUser
 
 
-class AccountAdmin(ModelAdmin):
-    pass
+
 
 
 class VKUserAdmin(ModelAdmin):
@@ -27,7 +26,6 @@ class NewsPhotoAdmin(ModelAdmin):
     pass
 
 
-site.register(Account, AccountAdmin)
 site.register(VKUser, VKUserAdmin)
 site.register(AdminUser, AdminUserAdmin)
 site.register(ProposedNews, ProposedNewsAdmin)

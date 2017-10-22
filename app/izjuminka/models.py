@@ -83,11 +83,3 @@ class ProposedNews(Model):
 
     def __str__(self):
         return str(self.id)
-
-
-class Account(Model):
-    news = OneToOneField(ProposedNews, on_delete=CASCADE)
-    amount = CharField(max_length=100)
-
-    def __str__(self):
-        return str(self.amount)

@@ -18,7 +18,7 @@ from django.http import HttpResponse
 from django.template import loader
 import vk
 
-from .models import ProposedNews, VKUser, NewsPhoto, AdminUser, Account
+from .models import ProposedNews, VKUser, NewsPhoto, AdminUser
 from .serializers import ProposedNewsSerializer, VKUserSerializer, AdminUserSerializer
 from app.settings import MEDIA_ROOT, VK_SERVICE_KEY, LENTACH_ID, TOP_LIMIT
 
