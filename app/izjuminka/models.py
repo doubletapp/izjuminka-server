@@ -61,6 +61,7 @@ class ProposedNews(Model):
     id = AutoField(primary_key=True)
     author = ForeignKey(VKUser, on_delete=CASCADE, null=True, blank=True, default=None)
     description = TextField()
+    source_post = CharField(max_length=200, blank=True, default=None, null=True)
     vk_id_reference = CharField(max_length=200, blank=True, default=None, null=True)
     validate_status = CharField(max_length=200, choices=ValidateStatus, default=ValidateStatus[0][1])
     validate_message = TextField(blank=True)

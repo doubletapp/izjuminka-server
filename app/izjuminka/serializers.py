@@ -49,7 +49,7 @@ class ProposedNewsSerializer(ModelSerializer):
     class Meta:
         model = ProposedNews
         fields = (
-            'id', 'author', 'description', 'validate_status',
+            'id', 'author', 'description', 'validate_status', 'source_post',
             'validate_message', 'create_datetime', 'point', "city", "vk_url", "cash", "photo"
         )
 
