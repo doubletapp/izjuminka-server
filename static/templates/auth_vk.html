@@ -2,11 +2,19 @@
 {% block title %}Auth VK{% endblock %}
 {% block body %}
     {% if path_photo %}
-        <img class="photo_200" src="{{ path_photo }}" alt='path_photo'>
-        <h1>Token: </h1><p>{{ token }}</p>
-        <p><input class="btn btn-primary" type="submit" value="logout" id="logout" onclick="onClick()"></p>
+        <div class="main__block">
+            <div class="photo">
+                <img class="img-thumbnail photo_200" src="{{ path_photo }}" alt='path_photo'>
+            </div>
+            <div>
+                <h1>Token: </h1><p>{{ token }}</p>
+                <p><input class="btn btn-primary" type="submit" value="logout" id="logout" onclick="onClick()"></p>
+            </div>
+        </div>
     {% else %}
-        <a class="btn btn-primary" href="https://oauth.vk.com/authorize?client_id=6227710&scope=notify,friends&redirect_uri=http://localhost:8000/admin/auth_vk/&display=page&response_type=token&auth=false">Авторизоваться</a>
+        <div class="center">
+            <a class="btn btn-primary" href="https://oauth.vk.com/authorize?client_id=6227710&scope=notify,friends&redirect_uri=http://localhost:8000/admin/auth_vk/&display=page&response_type=token&auth=false">Авторизоваться</a>
+        </div>
     {% endif %}
     <script >
 
@@ -37,6 +45,21 @@
             });
     </script>
     <style>
+        .photo {
+            width: 250px;
+        }
+        .main__block{
+            padding-top: 20px;
+            margin: auto;
+            display: flex;
+            justify-content: center;
+        }
+        .center {
+            height: 100vh;
+            width: 150px;
+            padding: 40vh;
+            margin: auto;
+        }
         .photo_200 {
             width: 200px;
             height: 200px;
